@@ -22,6 +22,16 @@ const DEFAULT_OPTIONS = {
     valueLabelOffset: 0
 };
 
+function debounce(func, delayMilliseconds) {
+    let timeout = null;
+    return () => {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(func, delayMilliseconds);
+    };
+}
+
 async function getSummaryData() {
     let response = await fetch(GET_SUMMARY);
 
@@ -152,7 +162,7 @@ function barchart(data, query, options = {}) {
     };
 
     if (responsive) {
-        window.addEventListener('resize', update);
+        window.addEventListener('resize', debounce(update, 100));
     }
 
     update();
