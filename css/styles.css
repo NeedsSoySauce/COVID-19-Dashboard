@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    font-family: 'Titillium Web', sans-serif;
 }
 
 html {
@@ -21,6 +22,11 @@ body {
 
 .pad-top {
     padding-top: 16px;
+}
+
+.hcenter {
+    display: flex;
+    justify-content: center;
 }
 
 g.grid {
