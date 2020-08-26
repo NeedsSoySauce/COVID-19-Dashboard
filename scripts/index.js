@@ -119,10 +119,10 @@ function barchart(data, query, options = {}) {
 window.addEventListener('DOMContentLoaded', async () => {
     let summaryData = await getSummaryData();
     let data = [];
-
+    console.log(summaryData)
     for (let elem of summaryData.Countries) {
         data.push({
-            key: elem.Country,
+            key: elem.CountryCode,
             value: elem.TotalConfirmed
         });
     }
@@ -136,7 +136,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         margin: {
             top: 30,
             bottom: 20,
-            left: 160,
+            left: 30,
             right: 20
         }
     };
