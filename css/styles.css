@@ -17,7 +17,7 @@ body {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0 4px;
 }
 
 .pad-top {
@@ -32,4 +32,20 @@ body {
 
 g.grid {
     stroke-width: 0.1;
+}
+
+text.value-label {
+    font-size: 10px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.value-label.white {
+    fill: white;
+}
+
+@media only screen and (min-width: 600px) {
+    .container {
+        padding: 0 16px;
+    }
 }
