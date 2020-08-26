@@ -23,35 +23,12 @@ async function getSummaryData() {
     return await response.json();
 }
 
-function barchart(data, query, options = {}) {
+function drawBarChart(data, query, options) {
     let { responsive, width, height, margin } = options;
+    let chartWidth = width - margin.left - margin.right;
+    let chartHeight = height - margin.top - margin.bottom;
 
-    margin = {
-        top: margin.top || DEFAULT_OPTIONS.margin.top,
-        bottom: margin.bottom || DEFAULT_OPTIONS.margin.bottom,
-        left: margin.left || DEFAULT_OPTIONS.margin.left,
-        right: margin.right || DEFAULT_OPTIONS.margin.right
-    };
-
-    width = width || DEFAULT_OPTIONS.width;
-    height = height || DEFAULT_OPTIONS.height;
-
-    // if (responsive) {
-    //     width = `calc(100% - ${margin.left + margin.right})`;
-    //     height = `calc(100% - ${margin.top + margin.bottom})`;
-    // }
-
-    // The
-    const chartWidth = width - margin.left - margin.right;
-    const chartHeight = height - margin.top - margin.bottom;
-
-    let svg;
-
-    if (responsive) {
-        svg = d3.select(query).append('svg').attr('viewBox', `0 0 ${width} ${height}`);
-    } else {
-        svg = d3.select(query).append('svg').attr('width', width).attr('height', height);
-    }
+    let svg = d3.select(query).append('svg').attr('width', width).attr('height', height);
 
     // Translate chart content so there's room for axis ticks and labels
     const chart = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
@@ -73,6 +50,7 @@ function barchart(data, query, options = {}) {
 
     // Draw horizontal bars
     chart
+        .append('g')
         .selectAll()
         .data(data)
         .enter()
@@ -80,6 +58,62 @@ function barchart(data, query, options = {}) {
         .attr('y', (s) => yScale(s.key))
         .attr('width', (s) => xScale(s.value))
         .attr('height', yScale.bandwidth());
+
+    // Add vertical grid lineschart.append('g')
+    chart
+        .append('g')
+        .attr('class', 'grid')
+        .attr('transform', `translate(0, ${height})`)
+        .call(d3.axisBottom().scale(xScale).tickSize(-height, 0, 0).tickFormat(''));
+}
+
+function barchart(data, query, options = {}) {
+    let { responsive, width, height, margin } = options;
+
+    margin = {
+        top: margin.top || DEFAULT_OPTIONS.margin.top,
+        bottom: margin.bottom || DEFAULT_OPTIONS.margin.bottom,
+        left: margin.left || DEFAULT_OPTIONS.margin.left,
+        right: margin.right || DEFAULT_OPTIONS.margin.right
+    };
+
+    width = width || DEFAULT_OPTIONS.width;
+    height = height || DEFAULT_OPTIONS.height;
+
+    const element = document.querySelector(query);
+
+    const update = () => {
+        if (responsive) {
+            element.innerHTML = '';
+
+            const bb = element.getBoundingClientRect();
+            width = bb.width;
+            height = bb.height || height;
+
+            let currentOptions = {
+                responsive,
+                width,
+                height,
+                margin
+            };
+
+            drawBarChart(data, query, currentOptions);
+        } else {
+            let currentOptions = {
+                responsive,
+                width,
+                height,
+                margin
+            };
+            drawBarChart(data, query, currentOptions);
+        }
+    };
+
+    if (responsive) {
+        window.addEventListener('resize', update);
+    }
+
+    update();
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -93,6 +127,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    data.sort((a, b) => a.value - b.value);
+
     const options = {
         responsive: true,
         width: 1000,
@@ -100,7 +136,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         margin: {
             top: 30,
             bottom: 20,
-            left: 200,
+            left: 160,
             right: 20
         }
     };

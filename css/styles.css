@@ -22,3 +22,7 @@ body {
 .pad-top {
     padding-top: 16px;
 }
+
+g.grid {
+    stroke-width: 0.1;
+}
