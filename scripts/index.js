@@ -1,6 +1,14 @@
 const API_ORIGIN = 'https://api.covid19api.com';
 const GET_SUMMARY = `${API_ORIGIN}/summary`;
 
+const BREAKPOINTS = {
+    xs: 0,
+    sm: 600,
+    md: 960,
+    lg: 1280,
+    xl: 1920
+};
+
 const DEFAULT_OPTIONS = {
     responsive: false,
     width: 400,
@@ -44,9 +52,16 @@ function drawBarChart(data, query, options) {
 
     const yScale = d3.scaleBand().domain(keys).range([chartHeight, 0]).padding(0.1);
 
+    let xAxis = d3.axisTop(xScale).tickFormat(d3.format('.2s'));
+    let yAxis = d3.axisLeft(yScale);
+
+    if (width < BREAKPOINTS.sm) {
+        xAxis.ticks(5)
+    }
+
     // Draw axes representing the scales we created above
-    chart.append('g').call(d3.axisLeft(yScale));
-    chart.append('g').call(d3.axisTop(xScale));
+    chart.append('g').call(xAxis);
+    chart.append('g').call(yAxis);
 
     // Draw horizontal bars
     chart
@@ -119,7 +134,7 @@ function barchart(data, query, options = {}) {
 window.addEventListener('DOMContentLoaded', async () => {
     let summaryData = await getSummaryData();
     let data = [];
-    console.log(summaryData)
+    console.log(summaryData);
     for (let elem of summaryData.Countries) {
         data.push({
             key: elem.CountryCode,
